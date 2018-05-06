@@ -1,8 +1,7 @@
 # Technical Test Machine Learning / Teads.tv
 **Matthieu MOISSON-FRANCKHAUSER**
-
 **06/05/2018**
-
+**https://github.com/matthieuMoisson/teads**
 ## Context
 Every time a user browses an eligible web page, we have to decide whether to display an ad video or not.
 
