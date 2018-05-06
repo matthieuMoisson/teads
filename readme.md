@@ -17,7 +17,7 @@ Csv file of 100000 examples of video ad displays. This log contains the followin
 
 ## Read
  
- 
+I decided to use scala. So I created the structure and class as the schema of the csv. 
 ````
     import org.apache.spark.sql.types._
     val schemaAft = StructType(
@@ -46,11 +46,12 @@ Csv file of 100000 examples of video ad displays. This log contains the followin
 
 ````
 
-We now have a dataframe and a dataset 
+We now have a Dataframe and a Dataset 
 
 ## The margin being defined as (revenue - cost) / revenue, what is our global margin based on this log?
 
 We need to calculate the total revenue and cost :
+
 ````
     val marginTotal: Float = DSAft.map(aft => aft.revenue - aft.cost).reduce((x, y) => x+y)
     val totalRevenue: Float = DSAft.map(_.revenue).reduce((x,y) => x+y)
@@ -62,8 +63,8 @@ The global Margin is **0.27191696** , and the total margin is **211.765**
 
 ## Can you think of other interesting metrics to optimize?
 
-There is lot of metric to optimise, the best solution to define this metric is to ask a expert what is the most important.
-I suggest 2 others metrix :
+The best solution to define new metric is to consult an expert which is the most important.
+I suggest two others metrix :
 * (revenue - cost) / n Where n is the number of elements, this metrix calculate the means margin
 * (revenue - cost) This metrix calculate the total margin
 
@@ -100,11 +101,12 @@ To find the most profitable Operating System, we need to group by system, then c
 | Windows | 0.22414444 |
 
 
-The best systeme are BSD, but there is less than 10 lignes in our log so it is not representative. Same for unknown, so the third is iOS
+The high score is BSD, but it is not the best because of these ten lines (it is not representative).
+The best significative element is **OS X**
 
 ## How would you use this historical data to predict the event 'we benefit from a revenue' (ie revenue > 0) in a dataset where the revenue is not known yet?
 
-For that we will split the data into the training and test. Then we have to transform into the format needed by the algorithm used.
+I split the data into training and test. Then I have to transform into the format needed by the algorithm used. In this case, I use the **MultilayerPerceptronClassifier** in MlLib.
 
 ````
     val DSAftModified: Dataset[AftModified] = DSAft.map(aft => {
@@ -136,9 +138,9 @@ For that we will split the data into the training and test. Then we have to tran
     })
 ````
 
-I decide to use a neural network, if i had more time i compare this algorithm with other like a random forest
+I decided to use a neural network. If I had more time, I will compared this algorithm with others (random forest, ...).
 
-What i decided is to detect the positiv benefit.
+What I decided is to detect is the positive benefit.
 
 ````
     // specify layers for the neural network:
@@ -154,7 +156,7 @@ What i decided is to detect the positiv benefit.
       .setMaxIter(100)
 ````
 
-We can now fit the model and calculate the accuracy 
+Next I fit the model and calculate the accuracy 
 
 ````
     // train the model
@@ -173,16 +175,17 @@ We can now fit the model and calculate the accuracy
     println("Test set accuracy = " + evaluator.evaluate(predictionAndLabels))
 ````
 
-I show the number element positiv and negativ in the test data. So i can compare my result with the case we choose automaticaly the value.
-The result seems to be good **0.72** but we have the same result if we put all individu to 1. So this model do not bring information
+I show the count of positive and negative elements in the data test. So I can compared my result in the case I choose automaticaly the value.
+The result seems to be good **0.72**. However I obtain the same result if I put all individus to 1. So this model don't bring information.
 
-To improve this model we have many choice :
-* standardisez the input
-* tries with other model
+To improve this model we have many choices :
+* Standardized the input
+* Tries with other models
 * ...
 
-I decide to change a little my previous model to detect the ad where we lose lot of money (revenue-cost) < 0.01
-I just simplified the previous model and change one ligne 
+I decided to change my previous model to detect the ad which had a benefit less important   ((revenue-cost) < 0.01).
+
+I just simplified the previous model and changed one line. 
 
 ````
       val DSAftModified: Dataset[AftModified] = DSAft.map(aft => {
@@ -197,14 +200,17 @@ I just simplified the previous model and change one ligne
     })
 ````
 
-We can see a better result :
+Result :
 * Accuracy = **0.9651**
 * Value(1)/total = **0.89560521973**
 
-Maybe we can had better result if we search more (standardised input, random forest, ...)
+ 
+However I think I could obtain best results if I had more time.
 
-
-
+## Ideas
+* Standardized input
+* Random forest
+* ...
 
 
 
